@@ -3,7 +3,7 @@ import sqlite3
 from flask import Flask
 from app.routes.note_routes import note_bp
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='app/templates', static_folder='app/static')
 # 設定 Secret Key，用於 flash messages 等功能
 app.secret_key = os.environ.get('SECRET_KEY', 'dev_secret_key')
 
