@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block title %}首頁 - 小說筆記本{% endblock %}
+
+{% block extra_css %}
+.search-container {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    margin-bottom: 30px;
+}
+.note-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    background: white;
+    overflow: hidden;
+}
+.note-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.1);
+}
+.note-card-header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: white;
+    padding: 15px 20px;
+    border-bottom: none;
+}
+.note-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+}
+.note-author {
+    font-size: 0.9rem;
+    color: #e94560;
+    margin-top: 5px;
+    margin-bottom: 0;
+}
+.rating-stars {
+    color: #f1c40f;
+    letter-spacing: 2px;
+}
+.review-text {
+    color: #555;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.action-buttons form {
+    display: inline;
+}
+{% endblock %}
+
+{% block content %}
+<!-- Search Area -->
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="search-container">
+            <h4 class="text-center mb-4" style="font-weight: 700; color: #1a1a2e;">尋找你的閱讀記憶</h4>
+            <form action="{{ url_for('note.index') }}" method="GET" class="d-flex">
+                <input class="form-control form-control-lg me-2 border-0 bg-light rounded-pill px-4" type="search" name="search" placeholder="輸入書名或作者..." aria-label="Search" value="{{ search_keyword }}">
+                <button class="btn btn-primary btn-lg rounded-pill px-4" type="submit" style="background-color: #e94560; border: none;">
+                    <i class="bi bi-search"></i> 搜尋
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Notes Grid -->
+{% if notes %}
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for note in notes %}
+    <div class="col">
+        <div class="card note-card d-flex flex-column">
+            <div class="card-header note-card-header">
+                <h5 class="note-title">{{ note.title }}</h5>
+                <p class="note-author"><i class="bi bi-pen me-1"></i>{{ note.author }}</p>
+            </div>
+            <div class="card-body flex-grow-1">
+                <div class="mb-3 rating-stars">
+                    {% for i in range(note.rating) %}★{% endfor %}{% for i in range(5 - note.rating) %}☆{% endfor %}
+                </div>
+                <p class="review-text">{{ note.review if note.review else '尚無心得紀錄...' }}</p>
+            </div>
+            <div class="card-footer bg-transparent border-top-0 pb-3 px-3 d-flex justify-content-between align-items-center">
+                <small class="text-muted"><i class="bi bi-clock me-1"></i>{{ note.created_at[:10] }}</small>
+                <div class="action-buttons">
+                    <a href="{{ url_for('note.edit_note', note_id=note.id) }}" class="btn btn-sm btn-outline-secondary rounded-pill me-1"><i class="bi bi-pencil"></i></a>
+                    <form action="{{ url_for('note.delete_note', note_id=note.id) }}" method="POST" onsubmit="return confirm('確定要刪除這筆筆記嗎？');">
+                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill"><i class="bi bi-trash"></i></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center mt-5">
+    <div class="display-1 text-muted mb-4"><i class="bi bi-journal-x"></i></div>
+    <h3 class="text-muted">找不到相關的筆記</h3>
+    <p class="lead text-muted mb-4">試著使用不同的關鍵字搜尋，或是新增一筆新紀錄吧！</p>
+    <a href="{{ url_for('note.add_note') }}" class="btn btn-primary btn-lg rounded-pill" style="background-color: #e94560; border: none;">馬上新增</a>
+</div>
+{% endif %}
+
+{% endblock %}

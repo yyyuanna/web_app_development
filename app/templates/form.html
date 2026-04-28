@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{% if note and note.id %}編輯筆記{% else %}新增筆記{% endif %} - 小說筆記本
+{% endblock %}
+
+{% block extra_css %}
+.form-container {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+}
+.form-label {
+    font-weight: 500;
+    color: #1a1a2e;
+}
+.form-control, .form-select {
+    border-radius: 10px;
+    padding: 12px 15px;
+    border: 1px solid #e0e0e0;
+    background-color: #fcfcfc;
+    transition: all 0.3s;
+}
+.form-control:focus, .form-select:focus {
+    box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.2);
+    border-color: #e94560;
+    background-color: #fff;
+}
+.btn-primary {
+    background-color: #e94560;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 20px;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+.btn-primary:hover {
+    background-color: #d13d56;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(233, 69, 96, 0.4);
+}
+.btn-secondary {
+    border-radius: 10px;
+    padding: 12px 20px;
+    font-weight: 500;
+}
+.page-title {
+    color: #1a1a2e;
+    font-weight: 700;
+    margin-bottom: 30px;
+    position: relative;
+    padding-bottom: 15px;
+}
+.page-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    background-color: #e94560;
+    border-radius: 2px;
+}
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10">
+        <div class="form-container">
+            <h2 class="page-title">
+                {% if note and note.id %}
+                <i class="bi bi-pencil-square me-2"></i>編輯小說筆記
+                {% else %}
+                <i class="bi bi-plus-circle me-2"></i>新增小說筆記
+                {% endif %}
+            </h2>
+
+            <form action="{% if note and note.id %}{{ url_for('note.edit_note', note_id=note.id) }}{% else %}{{ url_for('note.add_note') }}{% endif %}" method="POST">
+                
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <label for="title" class="form-label">書名 <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="title" name="title" value="{{ note.title if note else '' }}" placeholder="例如：哈利波特" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="author" class="form-label">作者 <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="author" name="author" value="{{ note.author if note else '' }}" placeholder="例如：J.K. 羅琳" required>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="rating" class="form-label">推薦評分 <span class="text-danger">*</span></label>
+                    <select class="form-select" id="rating" name="rating" required>
+                        <option value="5" {% if note and note.rating|string == '5' %}selected{% endif %}>★★★★★ (5星) - 神作必看！</option>
+                        <option value="4" {% if note and note.rating|string == '4' %}selected{% endif %}>★★★★☆ (4星) - 相當好看</option>
+                        <option value="3" {% if note and note.rating|string == '3' %}selected{% endif %}>★★★☆☆ (3星) - 普普通通</option>
+                        <option value="2" {% if note and note.rating|string == '2' %}selected{% endif %}>★★☆☆☆ (2星) - 有點雷</option>
+                        <option value="1" {% if note and note.rating|string == '1' %}selected{% endif %}>★☆☆☆☆ (1星) - 浪費時間</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label for="review" class="form-label">讀後心得</label>
+                    <textarea class="form-control" id="review" name="review" rows="6" placeholder="寫下你對這本小說的感想、喜歡的角色或是劇情亮點...">{{ note.review if note else '' }}</textarea>
+                </div>
+
+                <div class="d-flex justify-content-end gap-3 mt-5">
+                    <a href="{{ url_for('note.index') }}" class="btn btn-light btn-secondary text-dark border">取消</a>
+                    <button type="submit" class="btn btn-primary px-5">
+                        {% if note and note.id %}儲存修改{% else %}確定新增{% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
