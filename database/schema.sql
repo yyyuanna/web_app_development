@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS notes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    author TEXT NOT NULL,
+    review TEXT,
+    rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
